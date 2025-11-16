@@ -30,11 +30,6 @@ paleta_der = Paleta(
     color =  BLANCO
 )
 
-# Configuracion de la pelota
-PELOTA_RADIO = 10
-PELOTA_VEL_Y = 5
-PELOTA_VEL_X = 5
-
 # Pelota centrada en la pantalla
 pelota = Pelota(
     x = ANCHO //2,
@@ -49,8 +44,11 @@ pelota = Pelota(
 puntaje_jug1 = 0
 puntaje_jug2 = 0
 
+# Contador de rebotes
+contador_rebotes = 0
 
-#===== GAME LOOP ===================
+
+#========== GAME LOOP =======(lógica del juego)
 
 while True:
     for evento in pygame.event.get():
@@ -88,11 +86,33 @@ while True:
     if colision_pelota_paleta(pelota, paleta_izq):
         pelota.x = paleta_izq.x + paleta_izq.ancho + pelota.radio
         pelota.rebotar_horizontal()
+        contador_rebotes += 1
+
+        # Aumento de velocidad
+        if contador_rebotes % 3 == 0:
+            pelota.velocidad_x *= 1.1
+            pelota.velocidad_y *= 1.1
+
+        # Control de la velocidad (evita un aumento excesivo)
+        if pelota.velocidad_x > MAX_VELOCIDAD:
+            pelota.velocidad_x = MAX_VELOCIDAD
+        elif pelota.velocidad_x < -MAX_VELOCIDAD:
+            pelota.velocidad_x = -MAX_VELOCIDAD
 
     """ Rebote con la paleta derecha"""
     if colision_pelota_paleta(pelota, paleta_der):
         pelota.x = paleta_der.x - pelota.radio
         pelota.rebotar_horizontal()
+        contador_rebotes += 1
+
+        if contador_rebotes % 3 == 0:
+            pelota.velocidad_x *= 1.1
+            pelota.velocidad_y *= 1.1
+        
+        if pelota.velocidad_x > MAX_VELOCIDAD:
+            pelota.velocidad_x = MAX_VELOCIDAD
+        elif pelota.velocidad_x < -MAX_VELOCIDAD:
+            pelota.velocidad_x = -MAX_VELOCIDAD
 
     # --- GOLES ---
 
@@ -100,14 +120,15 @@ while True:
     if pelota.x - pelota.radio <= 0:
         puntaje_jug2 += 1
         pelota.reiniciar(ANCHO, ALTO)
+        contador_rebotes = 0
         
     #Gol de jugador N°1 ( la pelota sale por la derecha)
     if pelota.x + pelota.radio >= ANCHO:
         puntaje_jug1 += 1
         pelota.reiniciar(ANCHO, ALTO)
+        contador_rebotes = 0
         
         
-
     #Dibujar 
     pantalla.fill(NEGRO) # limpia pantalla
 
@@ -132,3 +153,6 @@ while True:
 
 # funciones a desarrollar
 # Tablero de punto, aumento de la velocidad de la aplicacion, score y game over 
+
+
+

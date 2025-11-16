@@ -1,28 +1,15 @@
 import pygame
 import sys
+from constantes import *
+from utilidades import colision_pelota_paleta, mostrar_puntaje
 from paleta import Paleta
 from pelota import Pelota
 
-# CONSTANTES del juego
-ANCHO = 800
-ALTO = 600
-
-#Colores
-NEGRO = (0, 0, 0)
-BLANCO = (255, 255, 255)
-GRIS = (128, 128, 128)
-
-FPS = 60
 
 pygame.init()
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("Pong - Multiplayer")
 clock = pygame.time.Clock()
-
-# Configuracion de las paletas
-PALETA_ANCHO = 15
-PALETA_ALTO = 100
-PALETA_VEL = 7
 
 # Paleta del jugador N°1 izquierda
 paleta_izq = Paleta(
@@ -61,24 +48,6 @@ pelota = Pelota(
 # Puntaje inicial 
 puntaje_jug1 = 0
 puntaje_jug2 = 0
-
-#=== Detectar colision =====
-def colision_pelota_paleta(pelota, paleta):
-    """Detecta si la pelota toca contra una paleta
-    """
-    pelota_rect = pygame.Rect(
-        pelota.x - pelota.radio,
-        pelota.y - pelota.radio,
-        pelota.radio * 2,
-        pelota.radio * 2
-    )
-    paleta_rect = pygame.Rect(
-        paleta.x,
-        paleta.y,
-        paleta.ancho,
-        paleta.alto
-    )
-    return pelota_rect.colliderect(paleta_rect)
 
 
 #===== GAME LOOP ===================
@@ -124,6 +93,19 @@ while True:
     if colision_pelota_paleta(pelota, paleta_der):
         pelota.x = paleta_der.x - pelota.radio
         pelota.rebotar_horizontal()
+
+    # --- GOLES ---
+
+    #Gol de jugador N°2( la pelota sale por la izquierda)
+    if pelota.x - pelota.radio <= 0:
+        puntaje_jug2 += 1
+        pelota.reiniciar(ANCHO, ALTO)
+        
+    #Gol de jugador N°1 ( la pelota sale por la derecha)
+    if pelota.x + pelota.radio >= ANCHO:
+        puntaje_jug1 += 1
+        pelota.reiniciar(ANCHO, ALTO)
+        
         
 
     #Dibujar 
@@ -131,6 +113,10 @@ while True:
 
     #Linea centrar de decoracion (red)
     pygame.draw.line(pantalla, GRIS, (ANCHO // 2, 0), (ANCHO // 2, ALTO), 2)
+
+    #Mostrar el puntaje 
+    mostrar_puntaje(pantalla, puntaje_jug1, puntaje_jug2)
+
 
     #Dibujar los objetos del juego
     paleta_izq.dibujar(pantalla)
@@ -144,5 +130,5 @@ while True:
     clock.tick(FPS)
 
 
-
-# Tablero de punto aumento de la velocidad de la aplicacion, score y game over 
+# funciones a desarrollar
+# Tablero de punto, aumento de la velocidad de la aplicacion, score y game over 

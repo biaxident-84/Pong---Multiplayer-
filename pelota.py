@@ -22,10 +22,10 @@ class Pelota:
         """ Al rebotar en las paletas invierte la velocidad x """
         self.velocidad_x *= - 1
 
-    def reiniciar(self, x, y):
+    def reiniciar(self, ancho_pantalla, alto_pantalla):
         """ Reinicia la pelota despues de un punto"""
-        self.x = x
-        self.y = y
+        self.x = ancho_pantalla // 2
+        self.y = alto_pantalla // 2
         #Invierte la velocidad después de un tanto.
         self.velocidad_x *= - 1
 

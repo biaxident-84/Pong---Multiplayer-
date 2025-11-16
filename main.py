@@ -38,7 +38,7 @@ paleta_der = Paleta(
     x = ANCHO - 30 - PALETA_ANCHO,  # 30 pixeles desde el borde derecho
     y = ALTO // 2 - PALETA_ALTO // 2, # Centrada verticalmente
     ancho = PALETA_ANCHO,
-    ancho = PALETA_ANCHO,
+    alto = PALETA_ALTO,
     velocidad = PALETA_VEL,
     color =  BLANCO
 )
@@ -62,6 +62,25 @@ pelota = Pelota(
 puntaje_jug1 = 0
 puntaje_jug2 = 0
 
+#=== Detectar colision =====
+def colision_pelota_paleta(pelota, paleta):
+    """Detecta si la pelota toca contra una paleta
+    """
+    pelota_rect = pygame.Rect(
+        pelota.x - pelota.radio,
+        pelota.y - pelota.radio,
+        pelota.radio * 2,
+        pelota.radio * 2
+    )
+    paleta_rect = pygame.Rect(
+        paleta.x,
+        paleta.y,
+        paleta.ancho,
+        paleta.alto
+    )
+    return pelota_rect.colliderect(paleta_rect)
+
+
 #===== GAME LOOP ===================
 
 while True:
@@ -77,32 +96,53 @@ while True:
         paleta_izq.mover_abajo(ALTO)
 
     #Jugador N° 2 ( teclas arriba/abajo)
-    if pygame.key.get_pressed()[pygame.KEYUP]:
+    if pygame.key.get_pressed()[pygame.K_UP]:
         paleta_der.mover_arriba(0)
-    if pygame.key.get_pressed()[pygame.KEYDOWN]:
+    if pygame.key.get_pressed()[pygame.K_DOWN]:
         paleta_der.mover_abajo(ALTO)
 
-# ACTUALIZAR 
-pelota.mover()
+    # ACTUALIZAR 
+    pelota.mover()
 
-#COLISIONES en sgte Fase
+    # COLISIONES 
+    """ Rebote con el borde superior de la cancha"""
+    if pelota.y - pelota.radio <= 0:
+        pelota.y = pelota.radio
+        pelota.rebotar_vertical()
 
-#Dibujar 
-pantalla.fill(NEGRO) # limpia pantalla
+    """ Rebote con el borde inferior de la cancha"""
+    if pelota.y - pelota.radio >= ALTO:
+        pelota.y = ALTO - pelota.radio
+        pelota.rebotar_vertical()
 
-#Linea centrar de decoracion (red)
-pygame.draw.line(pantalla, Gris, (ANCHO // 2, 0), (ANCHO // 2, ALTO), 2)
+    """ Rebore con paleta izquierda """
+    if colision_pelota_paleta(pelota, paleta_izq):
+        pelota.x = paleta_izq.x + paleta_izq.ancho + pelota.radio
+        pelota.rebotar_horizontal()
 
-#Dibujar los objetos del juego
-paleta_izq.dibujar(pantalla)
-paleta_der.dibujar(pantalla)
-pelota.dibujar(pantalla)
+    """ Rebote con la paleta derecha"""
+    if colision_pelota_paleta(pelota, paleta_der):
+        pelota.x = paleta_der.x - pelota.radio
+        pelota.rebotar_horizontal()
+        
 
-#Mostrando los dibujos
-pygame.display.flip()
+    #Dibujar 
+    pantalla.fill(NEGRO) # limpia pantalla
 
-#Control del FPS
-clock.tick(FPS)
+    #Linea centrar de decoracion (red)
+    pygame.draw.line(pantalla, GRIS, (ANCHO // 2, 0), (ANCHO // 2, ALTO), 2)
+
+    #Dibujar los objetos del juego
+    paleta_izq.dibujar(pantalla)
+    paleta_der.dibujar(pantalla)
+    pelota.dibujar(pantalla)
+
+    #Mostrando los dibujos
+    pygame.display.flip()
+
+    #Control del FPS
+    clock.tick(FPS)
 
 
 
+# Tablero de punto aumento de la velocidad de la aplicacion, score y game over 

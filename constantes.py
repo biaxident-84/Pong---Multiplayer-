@@ -13,8 +13,9 @@ ROJO = (255, 0, 0)
 AZUL = (0, 0, 255)
 
 FPS = 60
-
 PUNTOS_GANADOR = 5
+
+
 
 # Configuracion de las paletas
 PALETA_ANCHO = 15
@@ -28,4 +29,3 @@ PELOTA_VEL_X = 5
 
 MAX_VELOCIDAD = 7
 
-GAME_OVER= False

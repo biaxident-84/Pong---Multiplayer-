@@ -1,5 +1,5 @@
 import pygame
-from constantes import ANCHO, BLANCO
+from constantes import ANCHO, BLANCO, MAX_VELOCIDAD
 
 
 #=== Detectar colision =====

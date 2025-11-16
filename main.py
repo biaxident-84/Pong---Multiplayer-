@@ -47,102 +47,146 @@ puntaje_jug2 = 0
 # Contador de rebotes
 contador_rebotes = 0
 
+#Estado del juego
+game_over = False
+ganador = None
+
+def manejar_rebote_paletas(pelota, paleta, lado):
+
+    """Maneja colision de peloota con paleta
+
+    Args:
+        pelota (_type_): Objeto pelota
+        paleta (_type_): Objeto paleta con la que colisiona la pelota
+        lado (_type_): "izquierda" o "derecha"
+    """
+    global contador_rebotes
+
+    #reposiciona la pelota según el lado
+    if lado == "izquierda":
+        pelota.x = paleta.x + paleta.ancho + pelota.radio
+    else:
+        pelota.x = paleta.x - pelota.radio
+
+    pelota.rebotar_horizontal()
+
+    contador_rebotes += 1
+
+    # Aumento de velocidad
+    if contador_rebotes % 3 == 0:
+        pelota.velocidad_x *= 1.1
+        pelota.velocidad_y *= 1.1
+
+    # Control de la velocidad x (evita un aumento excesivo)
+    if pelota.velocidad_x > MAX_VELOCIDAD:
+        pelota.velocidad_x = MAX_VELOCIDAD
+    elif pelota.velocidad_x < -MAX_VELOCIDAD:
+        pelota.velocidad_x = -MAX_VELOCIDAD
+    # Velocidad y       
+    if pelota.velocidad_y > MAX_VELOCIDAD:
+        pelota.velocidad_y = MAX_VELOCIDAD
+    elif pelota.velocidad_y < -MAX_VELOCIDAD:
+        pelota.velocidad_y = -MAX_VELOCIDAD
+   
 
 #========== GAME LOOP =======(lógica del juego)
 
 while True:
+
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-    #Jugador N° 1 (teclas W/S)
-    if pygame.key.get_pressed()[pygame.K_w]:
-        paleta_izq.mover_arriba(0)
-    if pygame.key.get_pressed()[pygame.K_s]:
-        paleta_izq.mover_abajo(ALTO)
+        if game_over:
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
 
-    #Jugador N° 2 ( teclas arriba/abajo)
-    if pygame.key.get_pressed()[pygame.K_UP]:
-        paleta_der.mover_arriba(0)
-    if pygame.key.get_pressed()[pygame.K_DOWN]:
-        paleta_der.mover_abajo(ALTO)
+    if not game_over:
+        # === CONTROLES ===
+        #Jugador N° 1 (teclas W/S)
+        if pygame.key.get_pressed()[pygame.K_w]:
+            paleta_izq.mover_arriba(0)
+        if pygame.key.get_pressed()[pygame.K_s]:
+            paleta_izq.mover_abajo(ALTO)
 
-    # ACTUALIZAR 
-    pelota.mover()
+        #Jugador N° 2 ( teclas arriba/abajo)
+        if pygame.key.get_pressed()[pygame.K_UP]:
+            paleta_der.mover_arriba(0)
+        if pygame.key.get_pressed()[pygame.K_DOWN]:
+            paleta_der.mover_abajo(ALTO)
 
-    # COLISIONES 
-    """ Rebote con el borde superior de la cancha"""
-    if pelota.y - pelota.radio <= 0:
-        pelota.y = pelota.radio
-        pelota.rebotar_vertical()
+        # === ACTUALIZAR ===
+        pelota.mover()
 
-    """ Rebote con el borde inferior de la cancha"""
-    if pelota.y - pelota.radio >= ALTO:
-        pelota.y = ALTO - pelota.radio
-        pelota.rebotar_vertical()
+        # === COLISIONES ===
+        """ Rebote con el borde superior de la cancha"""
+        if pelota.y - pelota.radio <= 0:
+            pelota.y = pelota.radio
+            pelota.rebotar_vertical()
 
-    """ Rebore con paleta izquierda """
-    if colision_pelota_paleta(pelota, paleta_izq):
-        pelota.x = paleta_izq.x + paleta_izq.ancho + pelota.radio
-        pelota.rebotar_horizontal()
-        contador_rebotes += 1
+        """ Rebote con el borde inferior de la cancha"""
+        if pelota.y + pelota.radio >= ALTO:
+            pelota.y = ALTO - pelota.radio
+            pelota.rebotar_vertical()
 
-        # Aumento de velocidad
-        if contador_rebotes % 3 == 0:
-            pelota.velocidad_x *= 1.1
-            pelota.velocidad_y *= 1.1
+        if colision_pelota_paleta(pelota, paleta_izq):
+            manejar_rebote_paletas(pelota, paleta_izq, "izquierda")
 
-        # Control de la velocidad (evita un aumento excesivo)
-        if pelota.velocidad_x > MAX_VELOCIDAD:
-            pelota.velocidad_x = MAX_VELOCIDAD
-        elif pelota.velocidad_x < -MAX_VELOCIDAD:
-            pelota.velocidad_x = -MAX_VELOCIDAD
+        if colision_pelota_paleta(pelota, paleta_der):
+            manejar_rebote_paletas(pelota, paleta_der, "derecha")
 
-    """ Rebote con la paleta derecha"""
-    if colision_pelota_paleta(pelota, paleta_der):
-        pelota.x = paleta_der.x - pelota.radio
-        pelota.rebotar_horizontal()
-        contador_rebotes += 1
+        # === GOLES ===
 
-        if contador_rebotes % 3 == 0:
-            pelota.velocidad_x *= 1.1
-            pelota.velocidad_y *= 1.1
-        
-        if pelota.velocidad_x > MAX_VELOCIDAD:
-            pelota.velocidad_x = MAX_VELOCIDAD
-        elif pelota.velocidad_x < -MAX_VELOCIDAD:
-            pelota.velocidad_x = -MAX_VELOCIDAD
+        #Gol de jugador N°2( la pelota sale por la izquierda)
+        if pelota.x - pelota.radio <= 0:
+            puntaje_jug2 += 1
+            pelota.reiniciar(ANCHO, ALTO)
+            contador_rebotes = 0
 
-    # --- GOLES ---
+            if puntaje_jug2 >= PUNTOS_GANADOR:
+                game_over = True
+                ganador = 2
+            
+        #Gol de jugador N°1 ( la pelota sale por la derecha)
+        if pelota.x + pelota.radio >= ANCHO:
+            puntaje_jug1 += 1
+            pelota.reiniciar(ANCHO, ALTO)
+            contador_rebotes = 0
 
-    #Gol de jugador N°2( la pelota sale por la izquierda)
-    if pelota.x - pelota.radio <= 0:
-        puntaje_jug2 += 1
-        pelota.reiniciar(ANCHO, ALTO)
-        contador_rebotes = 0
-        
-    #Gol de jugador N°1 ( la pelota sale por la derecha)
-    if pelota.x + pelota.radio >= ANCHO:
-        puntaje_jug1 += 1
-        pelota.reiniciar(ANCHO, ALTO)
-        contador_rebotes = 0
-        
-        
+            if puntaje_jug1 >= PUNTOS_GANADOR:
+                game_over = True
+                ganador = 1
+
+
     #Dibujar 
     pantalla.fill(NEGRO) # limpia pantalla
 
-    #Linea centrar de decoracion (red)
-    pygame.draw.line(pantalla, GRIS, (ANCHO // 2, 0), (ANCHO // 2, ALTO), 2)
+    if not game_over:
+        #Linea centrar de decoracion (red)
+        pygame.draw.line(pantalla, GRIS, (ANCHO // 2, 0), (ANCHO // 2, ALTO), 2)
 
-    #Mostrar el puntaje 
-    mostrar_puntaje(pantalla, puntaje_jug1, puntaje_jug2)
+        #Mostrar el puntaje 
+        mostrar_puntaje(pantalla, puntaje_jug1, puntaje_jug2)
 
+        #Dibujar los objetos del juego
+        paleta_izq.dibujar(pantalla)
+        paleta_der.dibujar(pantalla)
+        pelota.dibujar(pantalla)
+    else:
+        fuente = pygame.font.Font(None, 95)
+        texto = fuente.render("GANADOR JUGADOR " + str(ganador)+"!", True, ROJO)
+        pos_x = ANCHO // 2 - texto.get_width() // 2
+        pos_y = ALTO //2 - texto.get_height() // 2
+        pantalla.blit(texto, (pos_x, pos_y))
 
-    #Dibujar los objetos del juego
-    paleta_izq.dibujar(pantalla)
-    paleta_der.dibujar(pantalla)
-    pelota.dibujar(pantalla)
+        fuente_pequeña = pygame.font.Font(None, 40)
+        texto_salir = fuente_pequeña.render("Presione ESC para salir", True, GRIS)
+        pos_x_salir = ANCHO // 2 - texto_salir.get_width() // 2
+        pos_y_salir = ALTO // 2 + 50
+        pantalla.blit(texto_salir, (pos_x_salir, pos_y_salir))
 
     #Mostrando los dibujos
     pygame.display.flip()
@@ -151,8 +195,7 @@ while True:
     clock.tick(FPS)
 
 
-# funciones a desarrollar
-# Tablero de punto, aumento de la velocidad de la aplicacion, score y game over 
+
 
 
 

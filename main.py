@@ -19,6 +19,8 @@ sonido_pared = pygame.mixer.Sound("assets/sounds/rebote.wav")
 sonido_pared.set_volume(0.5)
 sonido_gol = pygame.mixer.Sound("assets/sounds/goal.wav")
 sonido_gol.set_volume(0.5)
+sonido_game_over = pygame.mixer.Sound("assets/sounds/win.wav")
+sonido_game_over.set_volume(0.4)
 
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("Pong - Multiplayer")
@@ -170,6 +172,7 @@ while True:
             if puntaje_jug2 >= PUNTOS_GANADOR:
                 game_over = True
                 ganador = 2
+                sonido_game_over.play()
             
         #Gol de jugador N°1 ( la pelota sale por la derecha)
         if pelota.x + pelota.radio >= ANCHO:
@@ -181,6 +184,8 @@ while True:
             if puntaje_jug1 >= PUNTOS_GANADOR:
                 game_over = True
                 ganador = 1
+                sonido_game_over.play()
+
 
 
     #Dibujar 
@@ -221,4 +226,4 @@ while True:
 
 
 
-
+#toque espacio si quiere seguir jugando, ingreso de nombre del jugador al inicio 

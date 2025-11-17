@@ -7,8 +7,25 @@ from pelota import Pelota
 
 
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("assets/sounds/retro_back.mp3")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.2)
+
+# Efectos de sonido
+sonido_paleta = pygame.mixer.Sound("assets/sounds/paleta.mp3")
+sonido_paleta.set_volume(0.5)
+sonido_pared = pygame.mixer.Sound("assets/sounds/rebote.wav")
+sonido_pared.set_volume(0.5)
+sonido_gol = pygame.mixer.Sound("assets/sounds/goal.wav")
+sonido_gol.set_volume(0.5)
+
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("Pong - Multiplayer")
+# Cargo el fondo y escalo la imagen
+fondo_original = pygame.image.load("assets/images/fondo.jpg")
+fondo = pygame.transform.scale(fondo_original, (ANCHO, ALTO))
+
 clock = pygame.time.Clock()
 
 # Paleta del jugador N°1 izquierda
@@ -69,6 +86,7 @@ def manejar_rebote_paletas(pelota, paleta, lado):
         pelota.x = paleta.x - pelota.radio
 
     pelota.rebotar_horizontal()
+    sonido_paleta.play()
 
     contador_rebotes += 1
 
@@ -126,11 +144,13 @@ while True:
         if pelota.y - pelota.radio <= 0:
             pelota.y = pelota.radio
             pelota.rebotar_vertical()
+            sonido_pared.play()
 
         """ Rebote con el borde inferior de la cancha"""
         if pelota.y + pelota.radio >= ALTO:
             pelota.y = ALTO - pelota.radio
             pelota.rebotar_vertical()
+            sonido_pared.play()
 
         if colision_pelota_paleta(pelota, paleta_izq):
             manejar_rebote_paletas(pelota, paleta_izq, "izquierda")
@@ -142,6 +162,7 @@ while True:
 
         #Gol de jugador N°2( la pelota sale por la izquierda)
         if pelota.x - pelota.radio <= 0:
+            sonido_gol.play()
             puntaje_jug2 += 1
             pelota.reiniciar(ANCHO, ALTO)
             contador_rebotes = 0
@@ -152,6 +173,7 @@ while True:
             
         #Gol de jugador N°1 ( la pelota sale por la derecha)
         if pelota.x + pelota.radio >= ANCHO:
+            sonido_gol.play()
             puntaje_jug1 += 1
             pelota.reiniciar(ANCHO, ALTO)
             contador_rebotes = 0
@@ -162,7 +184,8 @@ while True:
 
 
     #Dibujar 
-    pantalla.fill(NEGRO) # limpia pantalla
+    pantalla.blit(fondo, (0, 0))
+    
 
     if not game_over:
         #Linea centrar de decoracion (red)

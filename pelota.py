@@ -9,6 +9,7 @@ class Pelota:
         self.velocidad_y = velocidad_y
         self.color = color
         
+        
     def mover(self):
         """ Mueve la pelota segun sus velocidades"""
         self.x += self.velocidad_x

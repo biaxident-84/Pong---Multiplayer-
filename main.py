@@ -12,7 +12,7 @@ pygame.mixer.music.load("assets/sounds/retro_back.mp3")
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.2)
 
-# Efectos de sonido
+#==== Efectos de sonido ====
 sonido_paleta = pygame.mixer.Sound("assets/sounds/paleta.mp3")
 sonido_paleta.set_volume(0.5)
 sonido_pared = pygame.mixer.Sound("assets/sounds/rebote.wav")
@@ -30,7 +30,7 @@ fondo = pygame.transform.scale(fondo_original, (ANCHO, ALTO))
 
 clock = pygame.time.Clock()
 
-# Paleta del jugador N°1 izquierda
+# Posicion Paleta del jugador N°1 izquierda
 paleta_izq = Paleta(
     x = 30, # 30 pixeles desde el borde izquierdo
     y = ALTO // 2 - PALETA_ALTO // 2, # Centrada verticalmente
@@ -39,7 +39,7 @@ paleta_izq = Paleta(
     velocidad = PALETA_VEL,
     color = BLANCO
 )
-
+# Posición Paleta del jugador N°2 derecha
 paleta_der = Paleta(
     x = ANCHO - 30 - PALETA_ANCHO,  # 30 pixeles desde el borde derecho
     y = ALTO // 2 - PALETA_ALTO // 2, # Centrada verticalmente
@@ -70,6 +70,7 @@ contador_rebotes = 0
 game_over = False
 ganador = None
 
+#  **** Funciones Auxiliares ****
 def manejar_rebote_paletas(pelota, paleta, lado):
 
     """Maneja colision de peloota con paleta
@@ -107,7 +108,27 @@ def manejar_rebote_paletas(pelota, paleta, lado):
         pelota.velocidad_y = MAX_VELOCIDAD
     elif pelota.velocidad_y < -MAX_VELOCIDAD:
         pelota.velocidad_y = -MAX_VELOCIDAD
-   
+
+def reiniciar_juego():
+    """ Reinicia al juego luego de un Game Over.
+    resetea:
+    - Posición de la pelota llamando a la funcion reiniciar
+    - Puntajes de ambos jugadores
+    - Contador de rebotes ( velocidad de pelota)
+    - Estado del juego y Ganador
+    - Reseteo velocidades de pelota manualmente
+    """
+    global puntaje_jug1, puntaje_jug2,contador_rebotes, game_over, ganador
+
+    pelota.reiniciar(ANCHO, ALTO)
+
+    pelota.velocidad_x = PELOTA_VEL_X
+    pelota.velocidad_y = PELOTA_VEL_Y
+    puntaje_jug1 = 0
+    puntaje_jug2 = 0
+    contador_rebotes = 0
+    game_over = False
+    ganador = None
 
 #========== GAME LOOP =======(lógica del juego)
 
@@ -123,8 +144,14 @@ while True:
                 if evento.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
+        
+        if game_over:
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_SPACE:
+                    reiniciar_juego()
 
     if not game_over:
+
         # === CONTROLES ===
         #Jugador N° 1 (teclas W/S)
         if pygame.key.get_pressed()[pygame.K_w]:
@@ -203,6 +230,7 @@ while True:
         paleta_izq.dibujar(pantalla)
         paleta_der.dibujar(pantalla)
         pelota.dibujar(pantalla)
+
     else:
         fuente = pygame.font.Font(None, 95)
         texto = fuente.render("GANADOR JUGADOR " + str(ganador)+"!", True, ROJO)
@@ -210,11 +238,18 @@ while True:
         pos_y = ALTO //2 - texto.get_height() // 2
         pantalla.blit(texto, (pos_x, pos_y))
 
-        fuente_pequeña = pygame.font.Font(None, 40)
-        texto_salir = fuente_pequeña.render("Presione ESC para salir", True, GRIS)
+        fuente_salir = pygame.font.Font(None, 40)
+        texto_salir = fuente_salir.render("Presione ESC para salir", True, GRIS)
         pos_x_salir = ANCHO // 2 - texto_salir.get_width() // 2
         pos_y_salir = ALTO // 2 + 50
         pantalla.blit(texto_salir, (pos_x_salir, pos_y_salir))
+
+        fuente_continuar = pygame.font.Font(None, 40)
+        texto_continuar = fuente_continuar.render("Presione Espacio para continuar", True, GRIS)
+        pos_x_continuar = ANCHO // 2 - texto_continuar.get_width() // 2
+        pos_y_continuar = ALTO // 2 + 90
+        pantalla.blit(texto_continuar, (pos_x_continuar, pos_y_continuar))
+
 
     #Mostrando los dibujos
     pygame.display.flip()

@@ -69,6 +69,10 @@ contador_rebotes = 0
 #Estado del juego
 game_over = False
 ganador = None
+nombre_jug1 = ""
+nombre_jug2 = ""
+estado_act = ESTADO_JUEGO
+capt_jugador1 = True
 
 #  **** Funciones Auxiliares ****
 def manejar_rebote_paletas(pelota, paleta, lado):
@@ -118,7 +122,7 @@ def reiniciar_juego():
     - Estado del juego y Ganador
     - Reseteo velocidades de pelota manualmente
     """
-    global puntaje_jug1, puntaje_jug2,contador_rebotes, game_over, ganador
+    global puntaje_jug1, puntaje_jug2,contador_rebotes, estado_act, ganador
 
     pelota.reiniciar(ANCHO, ALTO)
 
@@ -127,7 +131,7 @@ def reiniciar_juego():
     puntaje_jug1 = 0
     puntaje_jug2 = 0
     contador_rebotes = 0
-    game_over = False
+    estado_act = ESTADO_JUEGO
     ganador = None
 
 #========== GAME LOOP =======(lógica del juego)
@@ -139,18 +143,21 @@ while True:
             pygame.quit()
             sys.exit()
 
-        if game_over:
+        if estado_act == ESTADO_GAME_OVER:
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
         
-        if game_over:
+        if estado_act == ESTADO_GAME_OVER:
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_SPACE:
                     reiniciar_juego()
 
-    if not game_over:
+    if estado_act == ESTADO_INICIO:
+        pass
+
+    elif estado_act == ESTADO_JUEGO:
 
         # === CONTROLES ===
         #Jugador N° 1 (teclas W/S)
@@ -197,7 +204,7 @@ while True:
             contador_rebotes = 0
 
             if puntaje_jug2 >= PUNTOS_GANADOR:
-                game_over = True
+                estado_act = ESTADO_GAME_OVER
                 ganador = 2
                 sonido_game_over.play()
             
@@ -209,17 +216,22 @@ while True:
             contador_rebotes = 0
 
             if puntaje_jug1 >= PUNTOS_GANADOR:
-                game_over = True
+                estado_act = ESTADO_GAME_OVER
                 ganador = 1
                 sonido_game_over.play()
-
+    
+    elif estado_act == ESTADO_GAME_OVER:
+        pass
 
 
     #Dibujar 
     pantalla.blit(fondo, (0, 0))
+
+    if estado_act == ESTADO_INICIO:
+        pass
     
 
-    if not game_over:
+    if estado_act == ESTADO_JUEGO:
         #Linea centrar de decoracion (red)
         pygame.draw.line(pantalla, GRIS, (ANCHO // 2, 0), (ANCHO // 2, ALTO), 2)
 
@@ -231,7 +243,8 @@ while True:
         paleta_der.dibujar(pantalla)
         pelota.dibujar(pantalla)
 
-    else:
+    elif estado_act == ESTADO_GAME_OVER:
+
         fuente = pygame.font.Font(None, 95)
         texto = fuente.render("GANADOR JUGADOR " + str(ganador)+"!", True, ROJO)
         pos_x = ANCHO // 2 - texto.get_width() // 2

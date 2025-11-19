@@ -29,3 +29,7 @@ PELOTA_VEL_X = 5
 
 MAX_VELOCIDAD = 7
 
+# Estados de juego
+ESTADO_INICIO = "inicio"
+ESTADO_JUEGO = "juego"
+ESTADO_GAME_OVER = "game over"

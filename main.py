@@ -71,7 +71,7 @@ game_over = False
 ganador = None
 nombre_jug1 = ""
 nombre_jug2 = ""
-estado_act = ESTADO_JUEGO
+estado_act = ESTADO_INICIO
 capt_jugador1 = True
 
 #  **** Funciones Auxiliares ****
@@ -154,10 +154,37 @@ while True:
                 if evento.key == pygame.K_SPACE:
                     reiniciar_juego()
 
+        if estado_act == ESTADO_INICIO:
+            if evento.type == pygame.KEYDOWN:
+
+                if capt_jugador1:
+                    if evento.key == pygame.K_RETURN:
+                        capt_jugador1 = False
+
+                    elif evento.key == pygame.K_BACKSPACE:
+                        nombre_jug1 = nombre_jug1[: -1]
+
+                    elif len(nombre_jug1) < 10 and evento.unicode.isprintable():
+                        nombre_jug1 += evento.unicode  # agrega letra
+                
+                else:
+                    if evento.key == pygame.K_RETURN:
+                        if not nombre_jug1:
+                            nombre_jug1 = "jugador 1"
+                        if not nombre_jug2:
+                            nombre_jug2 = "jugador 2"
+                        estado_act = ESTADO_JUEGO
+            
+                    elif evento.key == pygame.K_BACKSPACE:
+                        nombre_jug2 = nombre_jug2[:-1]
+            
+                    elif len(nombre_jug2) < 10 and evento.unicode.isprintable():
+                        nombre_jug2 += evento.unicode
+
     if estado_act == ESTADO_INICIO:
         pass
 
-    elif estado_act == ESTADO_JUEGO:
+    if estado_act == ESTADO_JUEGO:
 
         # === CONTROLES ===
         #Jugador N° 1 (teclas W/S)
@@ -220,7 +247,7 @@ while True:
                 ganador = 1
                 sonido_game_over.play()
     
-    elif estado_act == ESTADO_GAME_OVER:
+    if estado_act == ESTADO_GAME_OVER:
         pass
 
 
@@ -228,8 +255,43 @@ while True:
     pantalla.blit(fondo, (0, 0))
 
     if estado_act == ESTADO_INICIO:
-        pass
-    
+         # Título PONG
+        fuente_titulo = pygame.font.Font(None, 100)
+        texto_titulo = fuente_titulo.render("PONG", True, BLANCO)
+        pos_titulo_x = ANCHO // 2 - texto_titulo.get_width() // 2
+        pantalla.blit(texto_titulo, (pos_titulo_x, 100))
+        
+        # Capturando Jugador 1
+        if capt_jugador1:
+            fuente = pygame.font.Font(None, 50)
+            texto = fuente.render(f"Jugador 1: {nombre_jug1}_", True, BLANCO)
+            pos_x = ANCHO // 2 - texto.get_width() // 2
+            pantalla.blit(texto, (pos_x, 300))
+            
+            fuente_info = pygame.font.Font(None, 30)
+            texto_info = fuente_info.render("Presiona ENTER para continuar", True, GRIS)
+            pos_info_x = ANCHO // 2 - texto_info.get_width() // 2
+            pantalla.blit(texto_info, (pos_info_x, 400))
+        
+        # Capturando Jugador 2
+        else:
+            fuente = pygame.font.Font(None, 50)
+            
+            # Jugador 1 confirmado (en verde)
+            texto1 = fuente.render(f"Jugador 1: {nombre_jug1}", True, ROJO)
+            pos_x1 = ANCHO // 2 - texto1.get_width() // 2
+            pantalla.blit(texto1, (pos_x1, 250))
+            
+            # Jugador 2 escribiendo (en blanco)
+            texto2 = fuente.render(f"Jugador 2: {nombre_jug2}_", True, BLANCO)
+            pos_x2 = ANCHO // 2 - texto2.get_width() // 2
+            pantalla.blit(texto2, (pos_x2, 350))
+            
+            fuente_info = pygame.font.Font(None, 30)
+            texto_info = fuente_info.render("Presiona ENTER para comenzar", True, GRIS)
+            pos_info_x = ANCHO // 2 - texto_info.get_width() // 2
+            pantalla.blit(texto_info, (pos_info_x, 450))
+        
 
     if estado_act == ESTADO_JUEGO:
         #Linea centrar de decoracion (red)
@@ -274,4 +336,4 @@ while True:
 
 
 
-#toque espacio si quiere seguir jugando, ingreso de nombre del jugador al inicio 
+

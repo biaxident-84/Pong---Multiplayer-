@@ -11,7 +11,7 @@ def colision_pelota_paleta(pelota, paleta):
         paleta (_type_): Objeto palete con atributos x, y, ancho y alto
 
     Returns:
-        True si hay colision y False sino
+        True si hay colision y sino  False 
     """
     pelota_rect = pygame.Rect(
         pelota.x - pelota.radio,
@@ -36,9 +36,9 @@ def mostrar_puntaje(pantalla, puntaje_jug1, puntaje_jug2, tamaño_fuente=85):
 
     # Calculo de las posiciones centradas
     pos_x_jug1 = ANCHO // 4 - texto_jug1.get_width() //2
-    pos_y_jug2 = 3 * ANCHO // 4 - texto_jug2.get_width() // 2
+    pos_x_jug2 = 3 * ANCHO // 4 - texto_jug2.get_width() // 2
 
     # Dibuja en pantalla
     pantalla.blit(texto_jug1, (pos_x_jug1, 20))
-    pantalla.blit(texto_jug2, (pos_y_jug2, 20))
+    pantalla.blit(texto_jug2, (pos_x_jug2, 20))
 

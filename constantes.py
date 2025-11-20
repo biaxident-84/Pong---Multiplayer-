@@ -11,6 +11,7 @@ GRIS = (128, 128, 128)
 VERDE = (0, 255, 0)
 ROJO = (255, 0, 0)
 AZUL = (0, 0, 255)
+AQUA = (0, 255, 255)
 
 FPS = 60
 PUNTOS_GANADOR = 5
@@ -18,14 +19,14 @@ PUNTOS_GANADOR = 5
 
 
 # Configuracion de las paletas
-PALETA_ANCHO = 15
+PALETA_ANCHO = 13
 PALETA_ALTO = 100
-PALETA_VEL = 7
+PALETA_VEL = 8
 
 # Configuracion de la pelota
 PELOTA_RADIO = 10
-PELOTA_VEL_Y = 5
-PELOTA_VEL_X = 5
+PELOTA_VEL_Y = 6
+PELOTA_VEL_X = 6
 
 MAX_VELOCIDAD = 7
 

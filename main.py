@@ -67,7 +67,7 @@ puntaje_jug2 = 0
 contador_rebotes = 0
 
 #Estado del juego
-game_over = False
+#game_over = False
 ganador = None
 nombre_jug1 = ""
 nombre_jug2 = ""
@@ -278,7 +278,7 @@ while True:
             fuente = pygame.font.Font(None, 50)
             
             # Jugador 1 confirmado (en verde)
-            texto1 = fuente.render(f"Jugador 1: {nombre_jug1}", True, ROJO)
+            texto1 = fuente.render(f"Jugador 1: {nombre_jug1}", True, AQUA)
             pos_x1 = ANCHO // 2 - texto1.get_width() // 2
             pantalla.blit(texto1, (pos_x1, 250))
             
@@ -308,7 +308,7 @@ while True:
     elif estado_act == ESTADO_GAME_OVER:
 
         fuente = pygame.font.Font(None, 95)
-        texto = fuente.render("GANADOR JUGADOR " + str(ganador)+"!", True, ROJO)
+        texto = fuente.render("GANADOR JUGADOR " + str(ganador)+"!", True, AQUA)
         pos_x = ANCHO // 2 - texto.get_width() // 2
         pos_y = ALTO //2 - texto.get_height() // 2
         pantalla.blit(texto, (pos_x, pos_y))

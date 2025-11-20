@@ -27,7 +27,7 @@ class Pelota:
         """ Reinicia la pelota despues de un punto"""
         self.x = ancho_pantalla // 2
         self.y = alto_pantalla // 2
-        #Invierte la velocidad después de un tanto.
+        #Invierte la direccion después de un tanto.
         self.velocidad_x *= - 1
 
     def dibujar(self, pantalla):

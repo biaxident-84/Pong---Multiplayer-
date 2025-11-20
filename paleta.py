@@ -1,5 +1,5 @@
 import pygame
-
+ 
 class Paleta:
     def __init__(self, x, y, ancho, alto, velocidad, color):
         self.x = x

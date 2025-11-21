@@ -12,6 +12,7 @@ VERDE = (0, 255, 0)
 ROJO = (255, 0, 0)
 AZUL = (0, 0, 255)
 AQUA = (0, 255, 255)
+OLIVE = (128, 128, 0)
 
 FPS = 60
 PUNTOS_GANADOR = 5
@@ -31,6 +32,7 @@ PELOTA_VEL_X = 6
 MAX_VELOCIDAD = 7
 
 # Estados de juego
+ESTADO_MENU = "menu"
 ESTADO_INICIO = "inicio"
 ESTADO_JUEGO = "juego"
 ESTADO_GAME_OVER = "game over"

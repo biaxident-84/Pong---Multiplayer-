@@ -18,6 +18,7 @@ sonido_paleta.set_volume(0.5)
 sonido_pared = pygame.mixer.Sound("assets/sounds/rebote.wav")
 sonido_pared.set_volume(0.5)
 sonido_gol = pygame.mixer.Sound("assets/sounds/goal.wav")
+
 sonido_gol.set_volume(0.5)
 sonido_game_over = pygame.mixer.Sound("assets/sounds/win.wav")
 sonido_game_over.set_volume(0.4)
@@ -71,8 +72,9 @@ contador_rebotes = 0
 ganador = None
 nombre_jug1 = ""
 nombre_jug2 = ""
-estado_act = ESTADO_INICIO
+estado_act = ESTADO_MENU
 capt_jugador1 = True
+opcion_menu = 0
 
 #  **** Funciones Auxiliares ****
 def manejar_rebote_paletas(pelota, paleta, lado):
@@ -143,18 +145,41 @@ while True:
             pygame.quit()
             sys.exit()
 
-        if estado_act == ESTADO_GAME_OVER:
+        # === EVENTOS DEL MENÚ ===*
+        elif estado_act == ESTADO_MENU:
+            if evento.type == pygame.KEYDOWN:
+                
+                if evento.key == pygame.K_DOWN:
+                    if opcion_menu < 2:
+                        opcion_menu += 1
+                    
+                elif evento.key == pygame.K_UP:
+                    if opcion_menu > 0:
+                        opcion_menu -= 1
+
+                elif evento.key == pygame.K_RETURN:
+                    if opcion_menu == 0:
+                        estado_act = ESTADO_INICIO
+                    elif opcion_menu == 1:
+                        pass#estado_act = ESTADO_ESTADISTICAS
+                    elif opcion_menu == 2:
+                        pygame.quit()
+                        sys.exit()
+
+        # === MANEJO DE EVENTOS DE GAME OVER ===
+        elif estado_act == ESTADO_GAME_OVER:
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
         
-        if estado_act == ESTADO_GAME_OVER:
+        elif estado_act == ESTADO_GAME_OVER:
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_SPACE:
                     reiniciar_juego()
 
-        if estado_act == ESTADO_INICIO:
+        # === EVENTOS PARA INGRESO DE NOMBRES ====
+        elif estado_act == ESTADO_INICIO:
             if evento.type == pygame.KEYDOWN:
 
                 if capt_jugador1:
@@ -180,7 +205,7 @@ while True:
             
                     elif len(nombre_jug2) < 10 and evento.unicode.isprintable():
                         nombre_jug2 += evento.unicode
-
+# ------------------------------------------------------------------------------------
     if estado_act == ESTADO_INICIO:
         pass
 
@@ -250,11 +275,41 @@ while True:
     if estado_act == ESTADO_GAME_OVER:
         pass
 
-
+# ---------------------------------------------------------------------------------
     #Dibujar 
     pantalla.blit(fondo, (0, 0))
 
-    if estado_act == ESTADO_INICIO:
+    # === DIBUJOS EN EL MENU ====
+    if estado_act == ESTADO_MENU:
+        fuente = pygame.font.Font(None, 130)
+        texto = fuente.render("PONG", True, BLANCO)
+        pos_x = ANCHO // 2 - texto.get_width() // 2
+        pantalla.blit(texto, (pos_x, 100))
+
+        opciones = ["JUGAR", "ESTADÍSTICAS", "SALIR"]
+        for i in range(3):
+            texto = opciones[i]
+            if i == opcion_menu:
+                tamaño = 87
+                color = AQUA
+            else:
+                tamaño = 80
+                color = BLANCO
+
+            fuente = pygame.font.Font(None, tamaño)
+            texto = fuente.render(texto, True, color)
+            pos_y = 300 + (i * 60)
+            pos_x = ANCHO // 2 - texto.get_width() // 2
+            pantalla.blit(texto, (pos_x, pos_y))
+
+        # Instruciones
+        fuente_instr = pygame.font.Font(None, 30)
+        texto_instr = fuente_instr.render("Use Flechas y presione ENTER", True, GRIS)
+        pos_instr_x = ANCHO // 2 - texto_instr.get_width() // 2
+        pantalla.blit(texto_instr, ( pos_instr_x, 500))
+
+
+    elif estado_act == ESTADO_INICIO:
          # Título PONG
         fuente_titulo = pygame.font.Font(None, 100)
         texto_titulo = fuente_titulo.render("PONG", True, BLANCO)
@@ -277,7 +332,7 @@ while True:
         else:
             fuente = pygame.font.Font(None, 50)
             
-            # Jugador 1 confirmado (en verde)
+            # Jugador 1 confirmado (en acqua)
             texto1 = fuente.render(f"Jugador 1: {nombre_jug1}", True, AQUA)
             pos_x1 = ANCHO // 2 - texto1.get_width() // 2
             pantalla.blit(texto1, (pos_x1, 250))
@@ -293,8 +348,8 @@ while True:
             pantalla.blit(texto_info, (pos_info_x, 450))
         
 
-    if estado_act == ESTADO_JUEGO:
-        #Linea centrar de decoracion (red)
+    elif estado_act == ESTADO_JUEGO:
+        #Linea central de decoracion (red)
         pygame.draw.line(pantalla, GRIS, (ANCHO // 2, 0), (ANCHO // 2, ALTO), 2)
 
         #Mostrar el puntaje 
@@ -331,7 +386,6 @@ while True:
 
     #Control del FPS
     clock.tick(FPS)
-
 
 
 

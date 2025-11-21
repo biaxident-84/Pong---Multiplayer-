@@ -42,3 +42,7 @@ def mostrar_puntaje(pantalla, puntaje_jug1, puntaje_jug2, tamaño_fuente=85):
     pantalla.blit(texto_jug1, (pos_x_jug1, 20))
     pantalla.blit(texto_jug2, (pos_x_jug2, 20))
 
+
+
+
+

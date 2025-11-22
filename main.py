@@ -1,7 +1,7 @@
 import pygame
 import sys
 from constantes import *
-from utilidades import colision_pelota_paleta, mostrar_puntaje
+from utilidades import colision_pelota_paleta, mostrar_puntaje, mostrar_pausa_info
 from paleta import Paleta
 from pelota import Pelota
 
@@ -75,6 +75,8 @@ nombre_jug2 = ""
 estado_act = ESTADO_MENU
 capt_jugador1 = True
 opcion_menu = 0
+musica_on = True
+
 
 #  **** Funciones Auxiliares ****
 def manejar_rebote_paletas(pelota, paleta, lado):
@@ -136,6 +138,7 @@ def reiniciar_juego():
     estado_act = ESTADO_JUEGO
     ganador = None
 
+
 #========== GAME LOOP =======(lógica del juego)
 
 while True:
@@ -145,7 +148,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-        # === EVENTOS DEL MENÚ ===*
+        # ========== EVENTOS DEL MENÚ ============
         elif estado_act == ESTADO_MENU:
             if evento.type == pygame.KEYDOWN:
                 
@@ -169,13 +172,12 @@ while True:
         # === MANEJO DE EVENTOS DE GAME OVER ===
         elif estado_act == ESTADO_GAME_OVER:
             if evento.type == pygame.KEYDOWN:
+
                 if evento.key == pygame.K_ESCAPE:
                     pygame.quit()
-                    sys.exit()
-        
-        elif estado_act == ESTADO_GAME_OVER:
-            if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_SPACE:
+                    sys.exit() 
+
+                elif evento.key == pygame.K_SPACE:
                     reiniciar_juego()
 
         # === EVENTOS PARA INGRESO DE NOMBRES ====
@@ -205,7 +207,29 @@ while True:
             
                     elif len(nombre_jug2) < 10 and evento.unicode.isprintable():
                         nombre_jug2 += evento.unicode
-# ------------------------------------------------------------------------------------
+                        
+        elif estado_act == ESTADO_JUEGO:
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_p:
+                    estado_act = ESTADO_PAUSE
+
+         # ===== Evento despausar ==========  
+        elif estado_act == ESTADO_PAUSE:
+            if evento.type == pygame.KEYDOWN:
+
+                if evento.key == pygame.K_p:
+                    estado_act = ESTADO_JUEGO
+                
+                elif evento.key == pygame.K_m:
+                    if musica_on:
+                        pygame.mixer.music.pause()
+                        musica_on = False
+                    else:
+                        pygame.mixer.music.unpause()
+                        musica_on = True
+# --------------------------------------------------------------------------------
+#                   LÓGICA
+#---------------------------------------------------------------------------------
     if estado_act == ESTADO_INICIO:
         pass
 
@@ -275,8 +299,9 @@ while True:
     if estado_act == ESTADO_GAME_OVER:
         pass
 
-# ---------------------------------------------------------------------------------
-    #Dibujar 
+# -----------------------------------------------------------------------------
+#                    DIBUJOS
+#------------------------------------------------------------------------------
     pantalla.blit(fondo, (0, 0))
 
     # === DIBUJOS EN EL MENU ====
@@ -348,9 +373,12 @@ while True:
             pantalla.blit(texto_info, (pos_info_x, 450))
         
 
-    elif estado_act == ESTADO_JUEGO:
+    elif estado_act == ESTADO_JUEGO or estado_act == ESTADO_PAUSE:
         #Linea central de decoracion (red)
         pygame.draw.line(pantalla, GRIS, (ANCHO // 2, 0), (ANCHO // 2, ALTO), 2)
+
+        #mostrar instr de pausa
+        mostrar_pausa_info(pantalla)
 
         #Mostrar el puntaje 
         mostrar_puntaje(pantalla, puntaje_jug1, puntaje_jug2)
@@ -359,6 +387,27 @@ while True:
         paleta_izq.dibujar(pantalla)
         paleta_der.dibujar(pantalla)
         pelota.dibujar(pantalla)
+    
+        if estado_act == ESTADO_PAUSE:
+            # Pantalla de pausa
+            fuente = pygame.font.Font(None, 100)
+            texto = fuente.render("PAUSA", True, BLANCO)
+            pos_x = ANCHO // 2 - texto .get_width() // 2
+            pos_y = ALTO // 2 - texto.get_height() // 2
+            pantalla.blit(texto, ( pos_x, pos_y))
+            
+            fuente_cont = pygame.font.Font(None, 40)
+            texto_cont = fuente_cont.render("Presione la tecla 'P' para continuar", True, AQUA)
+            pos_x_cont = ANCHO // 2 - texto_cont.get_width() // 2
+            pos_y_cont = ALTO // 2 + 50 
+            pantalla.blit(texto_cont, (pos_x_cont, pos_y_cont))
+            
+            fuente_silenciar = pygame.font.Font(None, 40)
+            texto_silenciar = fuente_silenciar.render("Presione la tecla 'M' para mutear/desmutear Música", True, AQUA)
+            pos_x_silenciar = ANCHO // 2 - texto_silenciar.get_width()// 2
+            pos_y_silenciar = ALTO // 2 + 90
+            pantalla.blit(texto_silenciar,(pos_x_silenciar, pos_y_silenciar))
+
 
     elif estado_act == ESTADO_GAME_OVER:
 

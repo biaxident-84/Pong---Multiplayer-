@@ -26,8 +26,8 @@ PALETA_VEL = 8
 
 # Configuracion de la pelota
 PELOTA_RADIO = 10
-PELOTA_VEL_Y = 6
-PELOTA_VEL_X = 6
+PELOTA_VEL_Y = 5
+PELOTA_VEL_X = 5
 
 MAX_VELOCIDAD = 7
 
@@ -35,4 +35,5 @@ MAX_VELOCIDAD = 7
 ESTADO_MENU = "menu"
 ESTADO_INICIO = "inicio"
 ESTADO_JUEGO = "juego"
+ESTADO_PAUSE = "pausa"
 ESTADO_GAME_OVER = "game over"
